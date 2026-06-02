@@ -5,16 +5,44 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
-    name: Deploy Lambda
+    name: Deploy
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Placeholder — CI/CD not yet configured
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::387362989156:role/field-report-github-actions-deploy
+          aws-region: us-east-2
+
+      - name: Package Lambda
         run: |
-          echo "Deploy pipeline not yet implemented."
-          echo "This workflow will package and deploy Lambda functions on push to main."
-          echo "Implementation scheduled for Project A Phase 6."
+          cd lambda/process_report
+          zip -r ../../lambda.zip .
+
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name field-report-process-report \
+            --zip-file fileb://lambda.zip
+          aws lambda wait function-updated \
+            --function-name field-report-process-report
+
+      - name: Deploy UI to S3
+        run: |
+          aws s3 sync ui/ s3://field-report-ui-387362989156/ --delete
+
+      - name: Smoke test
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            https://d9kim2z7t5.execute-api.us-east-2.amazonaws.com/prod/reports)
+          echo "GET /reports returned HTTP $STATUS"
+          [ "$STATUS" = "200" ]
