@@ -5,7 +5,7 @@ resource "aws_secretsmanager_secret" "app_config" {
 }
 
 resource "aws_secretsmanager_secret_version" "app_config" {
-  secret_id     = aws_secretsmanager_secret.app_config.id
+  secret_id = aws_secretsmanager_secret.app_config.id
   secret_string = jsonencode({
     placeholder = "replace-me"
   })

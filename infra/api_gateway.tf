@@ -115,8 +115,8 @@ resource "aws_api_gateway_integration_response" "options_200" {
 # ── Request validation ────────────────────────────────────────
 
 resource "aws_api_gateway_request_validator" "body" {
-  rest_api_id          = aws_api_gateway_rest_api.field_report.id
-  name                 = "validate-body"
+  rest_api_id           = aws_api_gateway_rest_api.field_report.id
+  name                  = "validate-body"
   validate_request_body = true
 }
 

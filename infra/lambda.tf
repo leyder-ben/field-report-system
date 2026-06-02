@@ -29,11 +29,11 @@ resource "aws_lambda_function" "process_report" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE    = aws_dynamodb_table.field_reports.name
-      SNS_TOPIC_ARN     = aws_sns_topic.notifications.arn
-      PHOTOS_BUCKET     = aws_s3_bucket.photos.bucket
-      BEDROCK_MODEL_ID  = "anthropic.claude-3-haiku-20240307-v1:0"
-      SECRET_NAME       = aws_secretsmanager_secret.app_config.name
+      DYNAMODB_TABLE   = aws_dynamodb_table.field_reports.name
+      SNS_TOPIC_ARN    = aws_sns_topic.notifications.arn
+      PHOTOS_BUCKET    = aws_s3_bucket.photos.bucket
+      BEDROCK_MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+      SECRET_NAME      = aws_secretsmanager_secret.app_config.name
     }
   }
 

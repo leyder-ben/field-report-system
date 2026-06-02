@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="theme-color" content="#1a3a5c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Field Report</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #eef0f3;
+      color: #1a1a1a;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a3a5c;
+      color: white;
+      padding: 1rem 1.25rem 0.9rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.01em;
+    }
+
+    header p {
+      font-size: 0.78rem;
+      opacity: 0.7;
+      margin: 0.15rem 0 0;
+    }
+
+    .form-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 1rem 1rem 3rem;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #777;
+      margin: 1.4rem 0 0.6rem 0.15rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem 1rem 0.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+
+    .field {
+      margin-bottom: 0.9rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 0.3rem;
+    }
+
+    .req { color: #c0392b; margin-left: 1px; }
+    .opt { color: #aaa; font-weight: 400; font-size: 0.75rem; margin-left: 4px; }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.68rem 0.85rem;
+      font-size: 16px; /* 16px prevents iOS auto-zoom */
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fafafa;
+      border: 1.5px solid #ddd;
+      border-radius: 7px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #1a3a5c;
+      background: white;
+    }
+
+    select {
+      background-color: #fafafa;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      padding-right: 2.5rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+
+    /* Photo field */
+    input[type="file"] { display: none; }
+
+    .photo-btn-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      background: #f5f7fa;
+      border: 1.5px dashed #bbb;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #555;
+      font-weight: 500;
+      user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .photo-btn-label:active,
+    .photo-btn-label:hover { background: #eaecf0; border-color: #999; }
+
+    .photo-preview { margin-top: 0.75rem; display: none; }
+
+    .photo-preview img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .remove-photo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: none;
+      border: none;
+      color: #c0392b;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 0.4rem 0;
+      font-weight: 500;
+      font-family: inherit;
+    }
+
+    /* Submit */
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background: #1a3a5c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:active { background: #0f2848; }
+    .submit-btn:disabled { background: #6c8aa0; cursor: not-allowed; }
+
+    /* Status messages */
+    .status {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .status.success {
+      display: block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1.5px solid #a5d6a7;
+    }
+
+    .status.error {
+      display: block;
+      background: #fce4ec;
+      color: #b71c1c;
+      border: 1.5px solid #ef9a9a;
+    }
+
+    .status.loading {
+      display: block;
+      background: #e3f2fd;
+      color: #1565c0;
+      border: 1.5px solid #90caf9;
+    }
+
+    .report-id {
+      font-family: ui-monospace, 'SF Mono', monospace;
+      font-size: 0.78rem;
+      display: block;
+      margin-top: 0.3rem;
+      opacity: 0.75;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 2px solid #90caf9;
+      border-top-color: #1565c0;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Field Report</h1>
+  <p>Submit a new field report</p>
+</header>
+
+<div class="form-wrap">
+  <form id="report-form" novalidate>
+
+    <div class="section-label">Job Info</div>
+    <div class="card">
+      <div class="field">
+        <label for="tech_name">Tech Name <span class="req">*</span></label>
+        <input type="text" id="tech_name" name="tech_name"
+               autocomplete="name" autocapitalize="words"
+               placeholder="First Last" />
+      </div>
+      <div class="field">
+        <label for="job_site">Job Site <span class="req">*</span></label>
+        <input type="text" id="job_site" name="job_site"
+               autocapitalize="words"
+               placeholder="Site name or address" />
+      </div>
+      <div class="field">
+        <label for="report_type">Report Type <span class="req">*</span></label>
+        <select id="report_type" name="report_type">
+          <option value="">Select type...</option>
+          <option value="t_and_m">Time &amp; Material</option>
+          <option value="pump_install_vt">Pump Install — Vertical Turbine</option>
+          <option value="pump_install_sc">Pump Install — Short Coupled</option>
+          <option value="pump_install_submersible">Pump Install — Submersible</option>
+          <option value="pump_install_horizontal">Pump Install — Horizontal</option>
+          <option value="fire_pump_test">Fire Pump Test</option>
+          <option value="well_cleaning">Well Cleaning</option>
+          <option value="pumping_test">Pumping Test</option>
+          <option value="observation_well">Observation Well</option>
+          <option value="timesheet">Weekly Timesheet</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-label">Details</div>
+    <div class="card">
+      <div class="field">
+        <label for="equipment">Equipment <span class="opt">optional</span></label>
+        <input type="text" id="equipment" name="equipment"
+               autocapitalize="sentences"
+               placeholder="Make, model, serial number" />
+      </div>
+      <div class="field">
+        <label for="notes">Notes <span class="opt">optional</span></label>
+        <textarea id="notes" name="notes"
+                  autocapitalize="sentences"
+                  placeholder="Observations, test results, issues..."></textarea>
+      </div>
+    </div>
+
+    <div class="section-label">Photo</div>
+    <div class="card" style="padding-bottom: 1rem;">
+      <input type="file" id="photo" name="photo" accept="image/*" />
+      <label for="photo" class="photo-btn-label" id="photo-btn-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        Attach Photo (optional)
+      </label>
+      <div class="photo-preview" id="photo-preview">
+        <img id="photo-thumb" src="" alt="Selected photo preview" />
+        <button type="button" class="remove-photo" id="remove-photo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Remove photo
+        </button>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submit-btn">Submit Report</button>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  </form>
+</div>
+
+<script>
+  const API = 'https://d9kim2z7t5.execute-api.us-east-2.amazonaws.com/prod/reports';
+
+  const form       = document.getElementById('report-form');
+  const submitBtn  = document.getElementById('submit-btn');
+  const statusEl   = document.getElementById('status');
+  const photoInput = document.getElementById('photo');
+  const photoPreview = document.getElementById('photo-preview');
+  const photoThumb   = document.getElementById('photo-thumb');
+  const removeBtn    = document.getElementById('remove-photo');
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      photoThumb.src = e.target.result;
+      photoPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  removeBtn.addEventListener('click', () => {
+    photoInput.value = '';
+    photoThumb.src = '';
+    photoPreview.style.display = 'none';
+  });
+
+  function setStatus(type, html) {
+    statusEl.className = 'status ' + type;
+    statusEl.innerHTML = html;
+    statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const techName   = document.getElementById('tech_name').value.trim();
+    const jobSite    = document.getElementById('job_site').value.trim();
+    const reportType = document.getElementById('report_type').value;
+
+    if (!techName || !jobSite || !reportType) {
+      setStatus('error', 'Please fill in all required fields.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setStatus('loading', '<span class="spinner"></span>Submitting...');
+
+    try {
+      let photoKey = '';
+      const photoFile = photoInput.files[0];
+
+      if (photoFile) {
+        setStatus('loading', '<span class="spinner"></span>Uploading photo...');
+
+        const presignRes = await fetch(
+          API + '?action=presigned_url&filename=' + encodeURIComponent(photoFile.name || 'photo.jpg')
+        );
+        if (!presignRes.ok) throw new Error('Could not get photo upload URL.');
+        const { presigned_url, photo_key } = await presignRes.json();
+
+        const uploadRes = await fetch(presigned_url, {
+          method: 'PUT',
+          body: photoFile,
+          headers: { 'Content-Type': photoFile.type || 'image/jpeg' }
+        });
+        if (!uploadRes.ok) throw new Error('Photo upload failed.');
+        photoKey = photo_key;
+
+        setStatus('loading', '<span class="spinner"></span>Saving report...');
+      }
+
+      const payload = {
+        tech_name:   techName,
+        job_site:    jobSite,
+        report_type: reportType,
+        equipment:   document.getElementById('equipment').value.trim(),
+        notes:       document.getElementById('notes').value.trim(),
+      };
+      if (photoKey) payload.photo_key = photoKey;
+
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Server error ' + res.status);
+
+      setStatus('success',
+        'Report submitted.' +
+        '<span class="report-id">ID: ' + data.report_id + '</span>'
+      );
+      form.reset();
+      photoPreview.style.display = 'none';
+      photoThumb.src = '';
+
+    } catch (err) {
+      setStatus('error', err.message || 'Submission failed. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>

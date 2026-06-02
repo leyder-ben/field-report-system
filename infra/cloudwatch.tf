@@ -55,7 +55,7 @@ resource "aws_cloudwatch_metric_alarm" "api_5xx" {
   treat_missing_data  = "notBreaching"
 
   dimensions = {
-    ApiName  = aws_api_gateway_rest_api.field_report.name
+    ApiName   = aws_api_gateway_rest_api.field_report.name
     StageName = aws_api_gateway_stage.prod.stage_name
   }
 

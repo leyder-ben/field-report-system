@@ -37,9 +37,9 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
         Resource = aws_dynamodb_table.field_reports.arn
       },
       {
-        Sid    = "SNSPublish"
-        Effect = "Allow"
-        Action = "sns:Publish"
+        Sid      = "SNSPublish"
+        Effect   = "Allow"
+        Action   = "sns:Publish"
         Resource = aws_sns_topic.notifications.arn
       },
       {
@@ -52,9 +52,9 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
         Resource = "${aws_s3_bucket.photos.arn}/*"
       },
       {
-        Sid    = "BedrockInvoke"
-        Effect = "Allow"
-        Action = "bedrock:InvokeModel"
+        Sid      = "BedrockInvoke"
+        Effect   = "Allow"
+        Action   = "bedrock:InvokeModel"
         Resource = "*"
       },
       {
@@ -68,9 +68,9 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
         Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"
       },
       {
-        Sid    = "SecretsManager"
-        Effect = "Allow"
-        Action = "secretsmanager:GetSecretValue"
+        Sid      = "SecretsManager"
+        Effect   = "Allow"
+        Action   = "secretsmanager:GetSecretValue"
         Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.project}/*"
       }
     ]
