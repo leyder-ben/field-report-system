@@ -126,6 +126,7 @@ resource "aws_iam_role_policy" "github_actions_deploy_policy" {
         Action = [
           "lambda:UpdateFunctionCode",
           "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
           "lambda:PublishVersion"
         ]
         Resource = aws_lambda_function.process_report.arn
